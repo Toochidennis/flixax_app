@@ -32,12 +32,19 @@ dependencies:
     sdk: flutter
   carousel_slider: ^5.0.0
   flutter_svg: ^2.0.17
-  
+  provider: ^6.1.0
+ 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   video_player: ^2.9.5
+  cached_network_image: ^3.4.1
+  chewie: ^1.11.3
+  url_launcher: ^6.3.1
+  external_app_launcher: ^4.0.3
+  shared_preferences: ^2.5.3
+  flutter_gif: ^0.0.4
 
 dev_dependencies:
   flutter_test:
@@ -74,6 +81,11 @@ flutter:
       - assets/images/img4.png
       - assets/images/img5.png
       - assets/images/coin.png
+      - assets/images/Coins.png
+      - assets/images/rafiki.png
+      - assets/images/glitter.png
+      - assets/images/back.png
+      - assets/images/placeholder.png
       - assets/video/vid1.mp4
       - assets/video/vid2.mp4
       - assets/video/vid3.mp4

@@ -1,8 +1,18 @@
 import 'package:flixax_app/concept.dart';
+import 'package:flixax_app/provider/movie_provider.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+
 void main() {
-  runApp( Home());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => MovieProvider()..fetchMovies(),
+      child: const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Home(),
+      ),
+    ),
+  );
 }
 
 class Home extends StatelessWidget {

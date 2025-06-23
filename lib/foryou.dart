@@ -4,6 +4,8 @@ import 'package:video_player/video_player.dart';
 import 'fullscreen.dart';
 
 class MainVideoFeed extends StatefulWidget {
+  const MainVideoFeed({super.key});
+
   @override
   _MainVideoFeedState createState() => _MainVideoFeedState();
 }
@@ -13,6 +15,7 @@ class _MainVideoFeedState extends State<MainVideoFeed> {
     'assets/video/vid1.mp4',
     'assets/video/vid2.mp4',
     'assets/video/vid3.mp4',
+    'https://encrypted-vtbn0.gstatic.com/video?q=tbn:ANd9GcQ5SoLkERO1k1HYab-cjqB8vlXPig3N17Ei0Q'
   ];
 
   void _showEpisodesOverlay(BuildContext context, String videoPath) {
@@ -184,7 +187,7 @@ class VideoItem extends StatefulWidget {
   final String videoPath;
   final VoidCallback onEpisodeTap;
 
-  VideoItem({required this.videoPath, required this.onEpisodeTap});
+  const VideoItem({super.key, required this.videoPath, required this.onEpisodeTap});
 
   @override
   _VideoItemState createState() => _VideoItemState();
@@ -197,17 +200,24 @@ class _VideoItemState extends State<VideoItem> {
 bool _showIcon = false;
 IconData _currentIcon = Icons.play_arrow;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.asset(widget.videoPath)
-      ..initialize().then((_) {
-        setState(() {});
-        _controller.play();
-      })
-      ..setLooping(true);
+ @override
+void initState() {
+  super.initState();
+
+  if (widget.videoPath.startsWith('http')) {
+    _controller = VideoPlayerController.network(widget.videoPath);
+  } else {
+    _controller = VideoPlayerController.asset(widget.videoPath);
   }
- 
+
+  _controller
+    ..initialize().then((_) {
+      setState(() {});
+      _controller.play();
+    })
+    ..setLooping(true);
+}
+
 
   @override
   void dispose() {

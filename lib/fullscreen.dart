@@ -5,7 +5,7 @@ import 'package:video_player/video_player.dart';
 class FullScreenVideoPage extends StatefulWidget {
   final String videoPath;
 
-  FullScreenVideoPage({required this.videoPath});
+  const FullScreenVideoPage({super.key, required this.videoPath});
 
   @override
   _FullScreenVideoPageState createState() => _FullScreenVideoPageState();

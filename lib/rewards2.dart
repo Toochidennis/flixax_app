@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flixax_app/widgets.dart';
 
 class Rewards2 extends StatelessWidget {
+  const Rewards2({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -235,24 +238,36 @@ class Rewards2 extends StatelessWidget {
                           svgAsset: 'assets/Icons/facebook.svg',
                           taskTitle: "Follow us on Facebook",
                           bonusTextColor: Colors.grey,
+                          url: 'https://www.facebook.com',
+                          onTaskCompleted: () {},
+                          onCoinAnimation: (Offset offset) {},
                         ),
                         SizedBox(height: 5),
                         SocialTask(
                           svgAsset: 'assets/Icons/youtube.svg',
                           taskTitle: "Follow us on Youtube",
                           bonusTextColor: Colors.grey,
+                          url: 'https://www.youtube.com',
+                          onTaskCompleted: () {},
+                          onCoinAnimation: (Offset offset) {},
                         ),
                         SizedBox(height: 5),
                         SocialTask(
                           svgAsset: 'assets/Icons/tiktok.svg',
                           taskTitle: "Follow us on TikTok",
                           bonusTextColor: Colors.grey,
+                          url: 'https://www.tiktok.com',
+                          onTaskCompleted: () {},
+                          onCoinAnimation: (Offset offset) {},
                         ),
                         SizedBox(height: 5),
                         SocialTask(
                           svgAsset: 'assets/Icons/facebook.svg',
                           taskTitle: "Follow us on Facebook",
                           bonusTextColor: Colors.grey,
+                          url: 'https://www.facebook.com',
+                          onTaskCompleted: () {},
+                          onCoinAnimation: (Offset offset) {},
                         ),
                         SizedBox(height: 5),
                         SocialTask2(
