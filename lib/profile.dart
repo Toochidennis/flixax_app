@@ -1,6 +1,8 @@
 import 'package:flixax_app/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -10,6 +12,39 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  User? _user;
+
+  @override
+  void initState() {
+    super.initState();
+    _user = FirebaseAuth.instance.currentUser;
+  }
+
+  Future<void> _signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      setState(() {
+        _user = userCredential.user;
+      });
+    } catch (e) {
+      print("Sign-in error: $e");
+    }
+  }
+
+  Future<void> _signOut() async {
+    await FirebaseAuth.instance.signOut();
+    setState(() {
+      _user = null;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,77 +59,81 @@ class _ProfileState extends State<Profile> {
             decoration: BoxDecoration(color: Colors.black),
             child: Row(
               children: [
-                CircleAvatar(radius: 30, backgroundColor: Color.fromRGBO(250,82,140,1)),
+                CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Color.fromRGBO(250, 82, 140, 1),
+                  backgroundImage: _user?.photoURL != null ? NetworkImage(_user!.photoURL!) : null,
+                  child: _user?.photoURL == null
+                      ? Icon(Icons.person, color: Colors.white)
+                      : null,
+                ),
                 SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Visitor 3479019",
+                        _user?.displayName ?? "Visitor 3479019",
                         style: TextStyle(
-                          color: Colors.white, 
+                          color: Colors.white,
                           fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      fontFamily: 'Nunito'
-                          ),
+                          fontWeight: FontWeight.w800,
+                          fontFamily: 'Nunito',
+                        ),
                       ),
                       SizedBox(height: 2),
                       Row(
                         children: [
                           Text(
-                            "ID 32479019",
+                            _user?.email ?? "ID 32479019",
                             style: TextStyle(
                               color: Colors.white54,
                               fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: 'Nunito'
+                              fontWeight: FontWeight.w400,
+                              fontFamily: 'Nunito',
                             ),
                           ),
-                          SizedBox(width: 6),
-                          GestureDetector(
-                            onTap: () {
-                              Clipboard.setData(
-                                ClipboardData(text: "32479019"),
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Copied to clipboard")),
-                              );
-                            },
-                            child: Icon(
-                              Icons.copy,
-                              color: Colors.white54,
-                              size: 15,
+                          if (_user != null)
+                            SizedBox(width: 6),
+                          if (_user != null)
+                            GestureDetector(
+                              onTap: () {
+                                Clipboard.setData(ClipboardData(text: _user!.email!));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Copied to clipboard")),
+                                );
+                              },
+                              child: Icon(
+                                Icons.copy,
+                                color: Colors.white54,
+                                size: 15,
+                              ),
                             ),
-                          ),
                         ],
                       ),
                     ],
                   ),
                 ),
                 SizedBox(
-                  child:  ElevatedButton(
-                              onPressed: (){},
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color.fromRGBO(217,65,79,1),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 25,
-                                  vertical: 6
-                                )
-                              ), 
-                              child:Text(
-                                "Log In",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                 fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Nunito'
-                                ),
-                              ) )
+                  child: ElevatedButton(
+                    onPressed: _user == null ? _signInWithGoogle : _signOut,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromRGBO(217, 65, 79, 1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      padding: EdgeInsets.symmetric(horizontal: 25, vertical: 6),
+                    ),
+                    child: Text(
+                      _user == null ? "Log In" : "Log Out",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Nunito',
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "621627449351",
+    "project_id": "flix-ff682",
+    "storage_bucket": "flix-ff682.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:621627449351:android:241130f268fb93d0654aa2",
+        "android_client_info": {
+          "package_name": "com.example.flixax_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "621627449351-6ka7n8ua5o5ofa7blgiu024b0k8vlt81.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.flixax_app",
+            "certificate_hash": "6bbc8ed5e9c3a4daa88b7b42dba6e20eb2f46435"
+          }
+        },
+        {
+          "client_id": "621627449351-b3sg0fhea7gs9jg2qpv6lk5mt8l3etko.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0ikVppeFTuDJ30-yREUclHPNFc3nrr8w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "621627449351-b3sg0fhea7gs9jg2qpv6lk5mt8l3etko.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
