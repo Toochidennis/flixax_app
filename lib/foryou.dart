@@ -195,29 +195,31 @@ class VideoItem extends StatefulWidget {
 
 class _VideoItemState extends State<VideoItem> {
   late VideoPlayerController _controller;
+  late Future<void> _initializeVideoPlayerFuture;
+  double _aspectRatio = 16 / 9; // Default aspect ratio for landscape videos
 
+  bool _showIcon = false;
+  IconData _currentIcon = Icons.play_arrow;
 
-bool _showIcon = false;
-IconData _currentIcon = Icons.play_arrow;
+  @override
+  void initState() {
+    super.initState();
 
- @override
-void initState() {
-  super.initState();
+    if (widget.videoPath.startsWith('http')) {
+      _controller = VideoPlayerController.network(widget.videoPath);
+    } else {
+      _controller = VideoPlayerController.asset(widget.videoPath);
+    }
 
-  if (widget.videoPath.startsWith('http')) {
-    _controller = VideoPlayerController.network(widget.videoPath);
-  } else {
-    _controller = VideoPlayerController.asset(widget.videoPath);
-  }
-
-  _controller
-    ..initialize().then((_) {
-      setState(() {});
+    _initializeVideoPlayerFuture = _controller.initialize().then((_) {
+      setState(() {
+        _aspectRatio = _controller.value.aspectRatio; // Get the video's aspect ratio
+      });
       _controller.play();
-    })
-    ..setLooping(true);
-}
+    });
 
+    _controller.setLooping(true);
+  }
 
   @override
   void dispose() {
@@ -230,46 +232,56 @@ void initState() {
     return Stack(
       children: [
         Positioned.fill(
-          child: _controller.value.isInitialized
-              ? GestureDetector(
-                 onTap: () {
-  setState(() {
-    if (_controller.value.isPlaying) {
-      _controller.pause();
-      _currentIcon = Icons.pause;
-    } else {
-      _controller.play();
-      _currentIcon = Icons.play_arrow;
-    }
-    _showIcon = true;
-  });
+          child: FutureBuilder(
+            future: _initializeVideoPlayerFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return Center(
+                  child: AspectRatio(
+                    aspectRatio: _aspectRatio,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (_controller.value.isPlaying) {
+                            _controller.pause();
+                            _currentIcon = Icons.pause;
+                          } else {
+                            _controller.play();
+                            _currentIcon = Icons.play_arrow;
+                          }
+                          _showIcon = true;
+                        });
 
-  Future.delayed(Duration(milliseconds: 500), () {
-    if (mounted) {
-      setState(() {
-        _showIcon = false;
-      });
-    }
-  });
-},
- child: VideoPlayer(_controller),
- )
-      : Center(child: CircularProgressIndicator()),
-        ),
-          if (_showIcon)
-        Center(
-          child: AnimatedOpacity(
-            opacity: _showIcon ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 200),
-            child: Icon(
-              _currentIcon,
-              size: 80,
-              color: Colors.white,
-            ),
+                        Future.delayed(Duration(milliseconds: 500), () {
+                          if (mounted) {
+                            setState(() {
+                              _showIcon = false;
+                            });
+                          }
+                        });
+                      },
+                      child: VideoPlayer(_controller),
+                    ),
+                  ),
+                );
+              } else {
+                return Center(child: CircularProgressIndicator());
+              }
+            },
           ),
         ),
-
-        
+        if (_showIcon)
+          Center(
+            child: AnimatedOpacity(
+              opacity: _showIcon ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 200),
+              child: Icon(
+                _currentIcon,
+                size: 80,
+                color: Colors.white,
+              ),
+            ),
+          ),
         Positioned(
           bottom: 120,
           right: 20,

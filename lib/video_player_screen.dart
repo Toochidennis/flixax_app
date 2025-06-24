@@ -24,7 +24,6 @@ class _FullScreenVideoPageState extends State<FullScreenVideoPage> {
   late VideoPlayerController _controller;
   bool _showIcon = false;
   IconData _currentIcon = Icons.play_arrow;
-  bool _isLandscape = false;
   bool _showControls = true;
   Timer? _hideControlsTimer;
 
@@ -38,16 +37,16 @@ class _FullScreenVideoPageState extends State<FullScreenVideoPage> {
     _controller.initialize().then((_) {
       setState(() {});
       _controller.play();
+      _startHideTimer(); // Start the timer only after the video has started playing
     });
     _controller.setLooping(true);
-    _startHideTimer();
   }
 
   void _startHideTimer() {
     _hideControlsTimer?.cancel();
-    if (_isLandscape) {
+    if (_controller.value.isPlaying) {
       _hideControlsTimer = Timer(const Duration(seconds: 7), () {
-        if (mounted && _isLandscape) {
+        if (mounted) {
           setState(() => _showControls = false);
         }
       });
@@ -67,28 +66,7 @@ class _FullScreenVideoPageState extends State<FullScreenVideoPage> {
   void dispose() {
     _hideControlsTimer?.cancel();
     _controller.dispose();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
     super.dispose();
-  }
-
-  void _toggleOrientation() {
-    setState(() {
-      _isLandscape = !_isLandscape;
-      _showControls = true;
-      if (_isLandscape) {
-        SystemChrome.setPreferredOrientations([
-          DeviceOrientation.landscapeLeft,
-          DeviceOrientation.landscapeRight,
-        ]);
-        _startHideTimer();
-      } else {
-        SystemChrome.setPreferredOrientations([
-          DeviceOrientation.portraitUp,
-        ]);
-      }
-    });
   }
 
   void _togglePlayPause() {
@@ -99,12 +77,9 @@ class _FullScreenVideoPageState extends State<FullScreenVideoPage> {
       } else {
         _controller.play();
         _currentIcon = Icons.pause;
+        _startHideTimer(); // Restart the timer when the video is playing
       }
       _showIcon = true;
-      if (_isLandscape) {
-        _showControls = true;
-        _startHideTimer();
-      }
     });
 
     Future.delayed(const Duration(milliseconds: 500), () {
@@ -134,18 +109,10 @@ class _FullScreenVideoPageState extends State<FullScreenVideoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final progressBarHeight = 20.0; // Approximate height of the progress bar
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: GestureDetector(
-        onTap: () {
-          if (_isLandscape) {
-            _toggleControlsVisibility();
-          } else {
-            _togglePlayPause();
-          }
-        },
+        onTap: _toggleControlsVisibility,
         child: Stack(
           children: [
             // Video Player
@@ -172,8 +139,8 @@ class _FullScreenVideoPageState extends State<FullScreenVideoPage> {
                 ),
               ),
 
-            // Portrait Mode Controls
-            if (!_isLandscape) ...[
+            // Controls
+            if (_showControls) ...[
               // Top Bar (left: back, center: title, right: three-dot)
               Positioned(
                 top: 40,
@@ -219,7 +186,7 @@ class _FullScreenVideoPageState extends State<FullScreenVideoPage> {
                 ),
               ),
 
-              // Fullscreen Icon at bottom right in portrait
+              // Fullscreen Icon at bottom right
               Positioned(
                 bottom: 20,
                 right: 20,
@@ -229,12 +196,13 @@ class _FullScreenVideoPageState extends State<FullScreenVideoPage> {
                     color: Colors.white,
                     size: 30,
                   ),
-                  onPressed: _toggleOrientation,
+                  onPressed: () {
+                    // Toggle orientation logic can be added here if needed
+                  },
                 ),
               ),
 
               // Right Side Icons above fullscreen icon
-              // (flame, episodes, share)
               Positioned(
                 bottom: 150,
                 right: 20,
@@ -253,87 +221,19 @@ class _FullScreenVideoPageState extends State<FullScreenVideoPage> {
               ),
             ],
 
-            // Landscape Mode Controls
-            if (_isLandscape && _showControls) ...[
-              // Back Button top left
-              Positioned(
-                top: 20,
-                left: 20,
-                child: GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                ),
-              ),
-
-              // Action Icons arranged horizontally at top right in landscape
-              Positioned(
-                top: 20,
-                right: 20,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SvgPicture.asset('assets/Icons/flame.svg'),
-                    const SizedBox(width: 15),
-                    GestureDetector(
-                      onTap: _showEpisodePopup,
-                      child: SvgPicture.asset('assets/Icons/episodes.svg'),
-                    ),
-                    const SizedBox(width: 15),
-                    SvgPicture.asset('assets/Icons/share.svg'),
-                  ],
-                ),
-              ),
-
-              // Fullscreen exit icon bottom right
-              Positioned(
-                bottom: 10,
-                right: 20,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.fullscreen_exit,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  onPressed: _toggleOrientation,
-                ),
-              ),
-
-              // Smaller play/pause button above left side of progress bar
-              Positioned(
-                bottom: progressBarHeight + 30,
-                left: 20,
-                child: IconButton(
-                  icon: Icon(
-                    _currentIcon,
-                    color: Colors.white,
-                    size: 40,
-                  ),
-                  onPressed: _togglePlayPause,
-                ),
-              ),
-            ],
-
-            // Progress Bar (always visible in portrait, conditionally in landscape)
+            // Progress Bar (always visible)
             Positioned(
-              bottom: _isLandscape ? 10 : 50,
+              bottom: 50,
               left: 0,
               right: 0,
               child: _controller.value.isInitialized
-                  ? AnimatedOpacity(
-                      opacity: (!_isLandscape || _showControls) ? 1.0 : 0.0,
-                      duration: const Duration(milliseconds: 300),
-                      child: VideoProgressIndicator(
-                        _controller,
-                        allowScrubbing: true,
-                        colors: const VideoProgressColors(
-                          playedColor: Colors.white,
-                          backgroundColor: Colors.white24,
-                          bufferedColor: Colors.grey,
-                        ),
+                  ? VideoProgressIndicator(
+                      _controller,
+                      allowScrubbing: true,
+                      colors: const VideoProgressColors(
+                        playedColor: Colors.white,
+                        backgroundColor: Colors.white24,
+                        bufferedColor: Colors.grey,
                       ),
                     )
                   : const SizedBox.shrink(),

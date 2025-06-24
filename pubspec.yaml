@@ -89,6 +89,7 @@ flutter:
       - assets/images/rafiki.png
       - assets/images/glitter.png
       - assets/images/back.png
+      - assets/images/anime.png
       - assets/images/placeholder.png
       - assets/video/vid1.mp4
       - assets/video/vid2.mp4

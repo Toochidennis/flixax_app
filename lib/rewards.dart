@@ -428,7 +428,7 @@ class _RewardsState extends State<Rewards> with TickerProviderStateMixin {
                                               svgAsset: 'assets/Icons/facebook.svg',
                                               taskTitle: "Follow us on Facebook",
                                               bonusTextColor: Colors.grey,
-                                              url: 'https://www.facebook.com/digitaldreamsng',
+                                              url: 'https://www.facebook.com/flixaxng/?locale=en_GB',
                                               onTaskCompleted: () {
                                                 setState(() => _taskCompleted[0] = true);
                                                 _incrementBonus(200);
@@ -444,7 +444,7 @@ class _RewardsState extends State<Rewards> with TickerProviderStateMixin {
                                               svgAsset: 'assets/Icons/youtube.svg',
                                               taskTitle: "Follow us on Youtube",
                                               bonusTextColor: Colors.grey,
-                                              url: 'https://youtube.com/@digitaldreamsictacademy1353?si=LMfIRwcFcG57R82B',
+                                              url: 'https://www.youtube.com/@Flixaxng',
                                               onTaskCompleted: () {
                                                 setState(() => _taskCompleted[1] = true);
                                                 _incrementBonus(200);
@@ -459,7 +459,7 @@ class _RewardsState extends State<Rewards> with TickerProviderStateMixin {
                                               svgAsset: 'assets/Icons/tiktok.svg',
                                               taskTitle: "Follow us on TikTok",
                                               bonusTextColor: Colors.grey,
-                                              url: 'https://www.tiktok.com/en/',
+                                              url: 'https://www.tiktok.com/@flixax',
                                               onTaskCompleted: () {
                                                 setState(() => _taskCompleted[2] = true);
                                                 _incrementBonus(200);
